@@ -11,19 +11,19 @@ class VariationalAutoDecoder(nn.Module):
         
         self.decoder= nn.Sequential(
             nn.Linear(self.latent_dim, 512),
-            nn.BatchNorm1d(512),
+            # nn.BatchNorm1d(512),
             nn.ReLU(),
             nn.Dropout(0.2),
             nn.Linear(512, 1024),
-            nn.BatchNorm1d(1024),
+            # nn.BatchNorm1d(1024),
             nn.ReLU(),
             nn.Dropout(0.2),
             nn.Linear(1024, 2048),
-            nn.BatchNorm1d(2048),
+            # nn.BatchNorm1d(2048),
             nn.ReLU(),
             nn.Dropout(0.2),
             nn.Linear(2048, 4096),
-            nn.BatchNorm1d(4096),
+            # nn.BatchNorm1d(4096),
             nn.ReLU(),
             nn.Dropout(0.2),
             nn.Linear(4096, 784),
@@ -54,5 +54,10 @@ class VariationalAutoDecoder(nn.Module):
         # std = self.std_fc(z)
         x = self.reparameterization_trick(distr_params)
         x = self.decoder(x)
+        x = x.view(-1, 28, 28)
+        return x
+
+    def david_forward(self, z):
+        x = self.decoder(z)
         x = x.view(-1, 28, 28)
         return x

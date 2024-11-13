@@ -1,13 +1,23 @@
 import torch
 
 
+# def reconstruction_loss(x, x_rec):
+#     """
+#     :param x: the original images
+#     :param x_rec: the reconstructed images
+#     :return: the reconstruction loss
+#     """
+#     return torch.norm(x - x_rec) / torch.prod(torch.tensor(x.shape))
+
+
 def reconstruction_loss(x, x_rec):
     """
     :param x: the original images
     :param x_rec: the reconstructed images
-    :return: the reconstruction loss
+    :return: the mean squared error reconstruction loss
     """
-    return torch.norm(x - x_rec) / torch.prod(torch.tensor(x.shape))
+    # Calculate MSE between x and x_rec, normalized over all elements per batch
+    return torch.mean((x - x_rec) ** 2)
 
 
 def evaluate_model(model, test_dl, opt, latents, epochs, device):

@@ -96,7 +96,7 @@ class VADTrainer:
         rec_loss = reconstruction_loss(x, x_rec)
         log_var = torch.log(sigma.pow(2))
         kl_loss = -0.5 * torch.sum(1 + log_var - mu.pow(2) - sigma.pow(2), dim=1)
-        return rec_loss +  kl_loss.mean()
+        return rec_loss +  42 * kl_loss.mean()
         
     def train_epoch(self):
         self.model.train()
