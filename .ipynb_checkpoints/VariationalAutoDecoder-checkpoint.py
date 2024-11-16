@@ -1,12 +1,12 @@
 import torch
 import torch.nn as nn
 
-class VariationalAutoDecoder_Beta(nn.Module):
+class VariationalAutoDecoder(nn.Module):
     def __init__(self, latent_dim, device="cpu"):
         super().__init__()
         self.latent_dim = latent_dim
         self.device = device
-        
+
         self.decoder= nn.Sequential(
             nn.Linear(self.latent_dim, 512),
             nn.BatchNorm1d(512),
@@ -27,15 +27,15 @@ class VariationalAutoDecoder_Beta(nn.Module):
             nn.Linear(4096, 784),
         )
 
-    def reparameterize(self, mu, std):
-        epsilon = torch.randn_like(mu).to(self.device)
-        return torch.exp(epsilon * std + mu)
 
-        
-    def forward(self, distr_params):
+    def reparameterization_trick(self, distr_params):
         mu = distr_params[:, 0, :]
         std = distr_params[:, 1, :]
-        x = self.reparameterize(mu, std)
+        epsilon = torch.randn_like(mu).to(self.device)
+        return epsilon * std + mu
+        
+    def forward(self, distr_params):
+        x = self.reparameterization_trick(distr_params)
         x = self.decoder(x)
         x = x.view(-1, 28, 28)
         return x
