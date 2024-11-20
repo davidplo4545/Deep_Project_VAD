@@ -134,7 +134,7 @@ class VADTrainer:
         return losses
 
 class VADTrainer_Expo:
-    def _init_(self, model, dl, latent_dim=64, device='cpu'):
+    def __init__(self, model, dl, latent_dim=64, device='cpu'):
         self.model = model.to(device)
         self.latent_dim = latent_dim
         self.dataloader = dl
@@ -200,7 +200,7 @@ class VADTrainer_Expo:
 
 
 class VADTrainer_LogNormal:
-    def _init_(self, model, dl, latent_dim=64, device='cpu'):
+    def __init__(self, model, dl, latent_dim=64, device='cpu'):
         self.model = model.to(device)
         self.latent_dim = latent_dim
         self.dataloader = dl
@@ -214,7 +214,7 @@ class VADTrainer_LogNormal:
     def elbo_loss(self, x, x_rec, mu, sigma):
         batch_size = x.size(0)
         rec_loss = mse_loss(x, x_rec)
-        kl_loss = -0.5 * torch.sum(1 + torch.log(sigma*2) - mu2 - sigma*2)
+        kl_loss = -0.5 * torch.sum(1 + torch.log(sigma*2) - mu*2 - sigma*2)
         return rec_loss + kl_loss.mean()
         
     def train_epoch(self):
@@ -238,14 +238,18 @@ class VADTrainer_LogNormal:
         epoch_loss = running_loss / len(self.dataloader)
         return epoch_loss
 
+
     def train(self, num_epochs, early_stopping=None):
+        """
+        The training loop.
+        """
         losses=list()
         best_loss = None
         for epoch in range(num_epochs):
             epoch_loss = self.train_epoch()
             losses.append(epoch_loss)
             print(f"Epoch [{epoch+1}/{num_epochs}], Loss: {epoch_loss:.4f}")
-    
+
             if best_loss is None or epoch_loss < best_loss:
                 no_improvement = 0
                 best_loss = epoch_loss
@@ -253,7 +257,8 @@ class VADTrainer_LogNormal:
                 no_improvement += 1
                 if early_stopping is not None and no_improvement >= early_stopping:
                     break
-        return losses
+
+        return losses
 
 
 
